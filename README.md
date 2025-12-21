@@ -3,7 +3,6 @@
 ## Tech Stack
 - Frontend: React
 - Backend: Node.js (Express)
-- Containerization: Docker & Docker Compose
 
 ## Features
 - Chat UI with message history
@@ -13,13 +12,7 @@
 - Basic error handling
 - Mobile-friendly layout
 
-## How to Run (Docker – Recommended)
-
-```bash
-docker-compose up --build
-
-
-## How to run (Without Docker)
+## How to run 
 cd backend
 npm install
 npm start
