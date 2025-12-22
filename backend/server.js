@@ -4,22 +4,80 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 app.use(express.json());
+let lastLocation = null;
+
 
 function getMockReply(message) {
-  const text = message.toLowerCase();
+  const text = message.toLowerCase().trim();
 
-  if (text.includes("hello") || text.includes("hi")) {
-    return "Hello! How can I help you today?";
-  }
-  if (text.includes("price")) {
-    return "Our pricing depends on your usage. A sales representative can assist you.";
-  }
-  if (text.includes("help")) {
-    return "Sure — please describe your issue and I will assist.";
+  // Greeting
+  if (text === "hello" || text === "hi") {
+    return "Hello! I can help you find hotels by location, price, or distance from the city center.";
   }
 
-  return "Thank you for your message. A support agent will respond shortly.";
+  // Intent keywords
+  const isCheapest = text.includes("cheapest");
+  const isClosest = text.includes("closest");
+  const isFurthest = text.includes("furthest");
+
+  // Extract location ("rome" OR "in rome")
+  let location = null;
+  const inMatch = text.match(/in\s+([a-z]+)/);
+
+  if (inMatch) {
+    location = inMatch[1];
+    lastLocation = location;
+  } else if (text.split(" ").length === 1 && !isCheapest && !isClosest && !isFurthest) {
+    location = text;
+    lastLocation = location;
+  }
+
+  // Cheapest
+  if (isCheapest) {
+    const loc = lastLocation || "this area";
+    return `Cheapest hotels in ${loc}:
+• Budget Stay – €45/night (7 km from center)
+• City Saver – €50/night (6 km)
+• Economy Lodge – €55/night (8 km)`;
+  }
+
+  // Closest
+  if (isClosest) {
+    const loc = lastLocation || "this area";
+    return `Closest hotels to the city center in ${loc}:
+• Central Plaza – €140/night (0.5 km)
+• Downtown Suites – €125/night (0.8 km)
+• City Heart Hotel – €115/night (1 km)`;
+  }
+
+  // Furthest
+  if (isFurthest) {
+    const loc = lastLocation || "this area";
+    return `Hotels furthest from the city center in ${loc}:
+• Highway Motel – €55/night (15 km)
+• Airport View – €60/night (12 km)
+• Suburban Comfort – €65/night (14 km)`;
+  }
+
+  // Pricing request
+  if (text.includes("price") || text.includes("pricing")) {
+    const loc = location || lastLocation || "this area";
+    return `Hotel prices in ${loc} typically range:
+• €45–70 (budget, outside center)
+• €80–120 (mid-range)
+• €130+ (central hotels)`;
+  }
+
+  // Location only
+  if (location) {
+    return `Looking for hotels in ${location}. Would you like the cheapest, closest, or furthest options?`;
+  }
+
+  // Fallback
+  return "Please provide a location or ask for cheapest, closest, or furthest hotels.";
 }
+
+
 
 app.post("/api/chat", (req, res) => {
   try {
