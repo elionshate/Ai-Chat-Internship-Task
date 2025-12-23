@@ -9,10 +9,11 @@ services:
     # restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: http://192.168.125.100:5000
     ports:
       - "0.0.0.0:3000:80"
-    environment:
-      - REACT_APP_API_URL=http://192.168.125.100:5000
     depends_on:
       - backend
