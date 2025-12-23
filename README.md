@@ -98,16 +98,29 @@ Build and run the entire app (frontend + backend) with one command:
 docker compose up --build
 ```
 
-This will:
-1. Build the backend Docker image (Node.js app)
-2. Build the frontend Docker image (React app compiled + Nginx server)
-3. Start both containers and connect them
-
 ### Access the App
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Health Check**: http://localhost:5000/health
+**On the same machine:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
+- Health Check: http://localhost:5000/health
+
+**From mobile device (same WiFi network):**
+1. Get your machine's local IP:
+   ```bash
+   ipconfig | Select-String "IPv4 Address"
+   ```
+   Example: `192.168.125.100`
+
+2. Open on mobile:
+   ```
+   http://192.168.125.100:3000
+   ```
+
+**Requirements for mobile access:**
+- Mobile device must be on the same WiFi network as your computer
+- Windows Firewall must allow incoming connections on ports 3000 and 5000
+- If connection fails, check firewall settings or temporarily disable Windows Defender Firewall for testing
 
 ### Stop and Cleanup
 
