@@ -29,26 +29,30 @@ function getMockReply(message) {
   const isClosest = text.includes("closest");
   const isFurthest = text.includes("furthest");
 
-  // Extract location more robustly:
-  // 1. Try "in [location]" pattern
-  // 2. Try to extract first word if it's not a keyword
+  // Extract location:
+  // 1. For multi-word input: first word = city, rest = request
+  //    e.g., "berlin cheapest" -> city: berlin, request: cheapest
+  // 2. Try "in [location]" pattern
   // 3. Fall back to lastLocation
   let location = null;
-  const inMatch = text.match(/in\s+([a-z]+)/);
+  const words = text.split(/\s+/);
 
-  if (inMatch) {
-    location = inMatch[1];
+  // Multi-word input: treat first word as city
+  if (words.length >= 2) {
+    location = words[0];
     lastLocation = location;
   } else {
-    // Extract the first non-keyword word as location
-    const words = text.split(/\s+/);
-    const keywords = ["cheapest", "closest", "furthest", "price", "pricing"];
-    
-    for (const word of words) {
-      if (!keywords.includes(word)) {
-        location = word;
+    // Single word or "in [location]" pattern
+    const inMatch = text.match(/in\s+([a-z]+)/);
+    if (inMatch) {
+      location = inMatch[1];
+      lastLocation = location;
+    } else if (words.length === 1) {
+      // Single word that's not a keyword
+      const keywords = ["cheapest", "closest", "furthest", "price", "pricing", "hello", "hi"];
+      if (!keywords.includes(text)) {
+        location = text;
         lastLocation = location;
-        break;
       }
     }
   }
